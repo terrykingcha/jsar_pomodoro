@@ -1,0 +1,22 @@
+{
+  "name": "jsar_pomodoro",
+  "displayName": "Pomodoro",
+  "version": "1.0.2",
+  "description": "Pomodoro Technique for AR Widget, Power by JSAR",
+  "main": "main.xsml",
+  "scripts": {
+    "dev": "serve -p 4090 --cors"
+  },
+  "files": [
+    "icon.png",
+    "main.xsml",
+    "lib/*.ts",
+    "model/digit.glb"
+  ],
+  "author": "terrykingcha <terrykingcha@gmail.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@yodaos-jsar/types": "*",
+    "serve": "^14.2.1"
+  }
+}
