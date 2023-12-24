@@ -1,8 +1,8 @@
-export let workTime = 1;
-export let breakTime = 0.5;
+let workTime = 1;
+let breakTime = 0.5;
 
 let startHandler;
-export function onStart(cb) {
+export function onStart(cb: (workTime: number, breakTime: number) => void) {
   startHandler = cb;
 }
 
@@ -18,11 +18,29 @@ function onHover(el: HTMLElement, cb: (isHover: boolean) => void) {
 function onClick(el: HTMLElement, cb: () => void) {
   let interval = 3000;
   let timeId: number;
+  let isStartClick = false;
+
   el.addEventListener('mouseenter', () => {
-    timeId = setTimeout(cb, interval);
+    timeId = setTimeout(() => {
+      isStartClick = false;
+      cb();
+    }, interval);
   });
   el.addEventListener('mouseleave', () => {
     clearTimeout(timeId);
+  });
+
+  el.addEventListener('mousedown', () => {
+    clearTimeout(timeId);
+    isStartClick = true;
+  });
+
+  el.addEventListener('mouseup', () => {
+    if (isStartClick) {
+      cb();
+    }
+    clearTimeout(timeId);
+    isStartClick = false;
   });
 }
 
@@ -202,7 +220,7 @@ const guiMesh = scene.getMeshById('gui');
 onClick(submitButton, () => {
   if (startHandler) {
     guiMesh.scaling = new BABYLON.Vector3(0, 0, 0);
-    startHandler();
+    startHandler(workTime, breakTime);
   }
 });
 
