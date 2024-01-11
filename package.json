@@ -1,7 +1,7 @@
 {
   "name": "jsar_pomodoro",
   "displayName": "Pomodoro",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Pomodoro Technique for AR Widget, Power by JSAR",
   "main": "main.xsml",
   "scripts": {
@@ -11,7 +11,7 @@
     "icon.png",
     "main.xsml",
     "lib/*.ts",
-    "model/digit.glb"
+    "model/*.glb"
   ],
   "author": "terrykingcha <terrykingcha@gmail.com>",
   "license": "Apache-2.0",

@@ -1,6 +1,6 @@
 import { AbstractMesh, Color3, PBRMaterial } from "babylonjs";
 
-const scene = spaceDocument.scene;
+const scene = spatialDocument.scene;
 
 /*
  * c1  c2  c3
@@ -32,6 +32,15 @@ const sp = scene.getMeshById('sp');
 const s1 = scene.getMeshById('s1');
 const s2 = scene.getMeshById('s2');
 
+const frameRate = 60;
+
+const greenColor = new BABYLON.Color3(0.239216, 0.882353, 0.513726);
+const redColor = new BABYLON.Color3(1, 0.226634, 0.307138);
+
+let biggerOrSmaller: 'bigger' | 'smaller' = 'bigger';
+let workTimeCount: number = 0;
+let breakTimeCount: number = 0;
+
 function changeDigit(mesh: AbstractMesh, type: string) {
   const meshs = mesh.getChildMeshes();
   const names = digitMeshNames[type];
@@ -44,7 +53,7 @@ function changeDigit(mesh: AbstractMesh, type: string) {
   });
 }
 
-function changeTime(time) {
+function changeTime(time: number) {
   const m = Math.floor(time / 60);
   const s = time % 60;
 
@@ -55,48 +64,89 @@ function changeTime(time) {
   changeDigit(s2, (s % 10).toString());
 }
 
-const greenColor = new BABYLON.Color3(0.274677, 0.799103, 0.132869);
-const redColor = new BABYLON.Color3(1, 0.226634, 0.307138);
-function changeColor(material: PBRMaterial, color: Color3) {
-  material.albedoColor = color;
+function changeColor(color: Color3) {
+  m1.getChildMeshes().forEach((mesh: AbstractMesh) => {
+    const mat: PBRMaterial = mesh.material as PBRMaterial;    
+    mat.albedoTexture = null;
+    mat.albedoColor = color;
+    mat.ambientColor = color;
+    mat.emissiveColor = color;
+  });
+
+  m2.getChildMeshes().forEach((mesh: AbstractMesh) => {
+    const mat: PBRMaterial = mesh.material as PBRMaterial;
+    mat.albedoTexture = null;
+    mat.albedoColor = color;
+  });
+  sp.getChildMeshes().forEach((mesh: AbstractMesh) => {
+    const mat: PBRMaterial = mesh.material as PBRMaterial;
+    mat.albedoTexture = null;
+    mat.albedoColor = color;
+  });
+  s1.getChildMeshes().forEach((mesh: AbstractMesh) => {
+    const mat: PBRMaterial = mesh.material as PBRMaterial;
+    mat.albedoTexture = null;
+    mat.albedoColor = color;
+  });
+  s2.getChildMeshes().forEach((mesh: AbstractMesh) => {
+    const mat: PBRMaterial = mesh.material as PBRMaterial;
+    mat.albedoTexture = null;
+    mat.albedoColor = color;
+  });
+}
+
+function initAnimation() {
+  const scalingAnimation = new BABYLON.Animation(
+    'scalingAnimation',
+    'scaling',
+    frameRate,
+    BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+    BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE
+  );
+  
+  scalingAnimation.setKeys([
+    {
+      frame: 0,
+      value: new BABYLON.Vector3(1, 1, 1)
+    },
+    {
+      frame: frameRate * 0.3,
+      value: new BABYLON.Vector3(0.05, 0.05, 0.05)
+    }
+  ]);
+  
+  const offsetAnimation = new BABYLON.Animation(
+    'offsetAnimation',
+    'position',
+    frameRate,
+    BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+    BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE
+  );
+  
+  offsetAnimation.setKeys([
+    {
+      frame: 0,
+      value: new BABYLON.Vector3(-2.5, 0, -10)
+    },
+    {
+      frame: frameRate * 0.3,
+      value: new BABYLON.Vector3(-10, -5, 0)
+    }
+  ]);
+  
+  timer.animations = [scalingAnimation, offsetAnimation];
 }
 
 function initWorkTimer() {
-  timer.position = new BABYLON.Vector3(-5, -5, 0);
-  timer.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05);
-  m1.getChildMeshes().forEach((mesh: AbstractMesh) => {
-    changeColor(mesh.material as PBRMaterial, greenColor);
-  });
-  m2.getChildMeshes().forEach((mesh: AbstractMesh) => {
-    changeColor(mesh.material as PBRMaterial, greenColor);
-  });
-  s1.getChildMeshes().forEach((mesh: AbstractMesh) => {
-    changeColor(mesh.material as PBRMaterial, greenColor);
-  });
-  s2.getChildMeshes().forEach((mesh: AbstractMesh) => {
-    changeColor(mesh.material as PBRMaterial, greenColor);
-  });
+  beSmaller();
+  changeColor(greenColor);
 }
 
 function initBreakTimer() {
-  timer.position = new BABYLON.Vector3(0, 0, 0);
-  timer.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2);
-  m1.getChildMeshes().forEach((mesh: AbstractMesh) => {
-    changeColor(mesh.material as PBRMaterial, redColor);
-  });
-  m2.getChildMeshes().forEach((mesh: AbstractMesh) => {
-    changeColor(mesh.material as PBRMaterial, redColor);
-  });
-  s1.getChildMeshes().forEach((mesh: AbstractMesh) => {
-    changeColor(mesh.material as PBRMaterial, redColor);
-  });
-  s2.getChildMeshes().forEach((mesh: AbstractMesh) => {
-    changeColor(mesh.material as PBRMaterial, redColor);
-  });
+  beBigger();
+  changeColor(redColor);
 }
 
-let workTimeCount: number = 0;
-let breakTimeCount: number = 0;
 async function sleep() {
   return new Promise((resolve) => {
     setTimeout(resolve, 1000);
@@ -123,9 +173,37 @@ async function startBreak() {
   return;
 }
 
+export function change(time: number, type: 'work' | 'break') {
+  changeTime(time);
+  changeColor(type === 'work' ? greenColor : redColor);
+}
+
+export function init() {
+  initAnimation();
+  // change(0, 'work');
+}
+
+export function beBigger() {
+  if (biggerOrSmaller === 'bigger') {
+    return;
+  }
+
+  biggerOrSmaller = 'bigger';
+  scene.beginAnimation(timer, frameRate * 0.3, 0, false, 1);
+}
+
+export function beSmaller() {
+  if (biggerOrSmaller === 'smaller') {
+    return;
+  }
+
+  biggerOrSmaller = 'smaller';
+  scene.beginAnimation(timer, 0, frameRate * 0.3, false, 1);
+}
+
 export async function start(workTime: number, breakTime: number, handler: (isWorking: boolean) => void) {
-  workTimeCount = workTime * 60;
-  breakTimeCount = breakTime * 60;
+  workTimeCount = workTime;
+  breakTimeCount = breakTime;
 
   initWorkTimer();
   handler(true);

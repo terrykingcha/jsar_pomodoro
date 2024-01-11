@@ -44,7 +44,7 @@ function onClick(el: HTMLElement, cb: () => void) {
   });
 }
 
-const scene = spaceDocument.scene;
+const scene = spatialDocument.scene;
 const gui = spatialDocument.getSpatialObjectById('gui').shadowRoot;
 
 const settingList = gui.querySelectorAll('.setting');
@@ -195,7 +195,6 @@ const [submitButton] = (gui.querySelectorAll('.submit') as unknown) as HTMLDivEl
 const submitButtonStyle = `
   width: 400px;
   height: 100px;
-  background-color: rgb(22, 119, 255);
   font-size: 70px;
   color: white;
   border-radius: 10px;
@@ -204,7 +203,6 @@ const submitButtonStyle = `
 const submitButtonHoverStyle = `
   width: 420px;
   height: 105px;
-  background-color: rgb(22, 119, 255);
   font-size: 74px;
   color: white;
   border-radius: 10px;
