@@ -111,7 +111,7 @@ function initAnimation() {
     },
     {
       frame: frameRate * 0.3,
-      value: new BABYLON.Vector3(0.05, 0.05, 0.05)
+      value: new BABYLON.Vector3(0.3, 0.3, 0.3)
     }
   ]);
   
@@ -130,7 +130,7 @@ function initAnimation() {
     },
     {
       frame: frameRate * 0.3,
-      value: new BABYLON.Vector3(-10, -5, 0)
+      value: new BABYLON.Vector3(-75, -45, -10)
     }
   ]);
   

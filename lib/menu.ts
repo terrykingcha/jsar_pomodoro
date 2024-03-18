@@ -1,5 +1,13 @@
+import { createRawTexture } from './createRawTexture';
+import * as audio from './audio';
+
 const scene = spatialDocument.scene;
-const gui = spatialDocument.getSpatialObjectById('gui').shadowRoot;
+const gui = spaceDocument.getSpatialObjectById('gui').shadowRoot;
+
+const guiMesh = scene.getMeshById('gui');
+setTimeout(() => {
+  guiMesh.scaling = new BABYLON.Vector3(102.5, 102.5, 102.5);
+}, 0);
 
 const menu = scene.getTransformNodeById('menu');
 menu.scaling = new BABYLON.Vector3(1, 1, 1);
@@ -39,30 +47,52 @@ class MenuItem {
 }
 
 class MenuButton extends MenuItem {
+
   constructor (mesh: BABYLON.Mesh, text: HTMLDivElement) {
     super(mesh, text);
-    this.onHover((isHover) => {});
+    this.onHover(() => {
+      audio.hover.then(play => play());
+    });
+
+    this.onClick(() => {
+      audio.click.then(play => play());
+    });
   }
 
-  private onHover(cb: (isHover: boolean) => void) {
+  public onHover(cb: (isHover: boolean) => void) {
+    let isHover = false;
+
     this.text.addEventListener('mouseenter', () => {
       if (!this.isShown) {
         return;
       }
 
+      if (isHover) {
+        return;
+      }
+
+      isHover = true;
+
       scene.beginAnimation(this.mesh, 0, frameRate * 0.3, false, 1, () => {
         cb(true);
       });
     });
+
     this.text.addEventListener('mouseleave', () => {
       if (!this.isShown) {
         return;
       }
 
-      scene.beginAnimation(this.mesh, frameRate * 0.3, 0, false, 1, () => {
-        cb(false);
-      });
+      if (!isHover) {
+        return;
+      }
+
+      isHover = false;
+
+      scene.beginAnimation(this.mesh, frameRate * 0.3, 0, false, 1);
     });
+
+    return this;
   }
 
   public onClick(cb: () => void) {
@@ -86,6 +116,8 @@ class MenuButton extends MenuItem {
       }
       isStartClick = false;
     });
+
+    return this;
   }
 }
 
@@ -121,8 +153,10 @@ function createAnimations() {
   return [btnScalingAnim];
 }
 
+
+
 let nodeZ = 0.000001;
-function createNode(name: string, texture: string, {
+function createNode(name: string, texture: ArrayBuffer | string, {
   width, height, left, top, fontSize, color,
 }: CreateOptions): [BABYLON.Mesh, HTMLDivElement] {
   const img = BABYLON.MeshBuilder.CreatePlane(name, {
@@ -141,16 +175,24 @@ function createNode(name: string, texture: string, {
   img.position.z = nodeZ;
 
   nodeZ += 0.000001;
+
   
   const mat = new BABYLON.StandardMaterial(`${name}-mat`, scene);
-  mat.diffuseTexture = new BABYLON.Texture(texture, scene);
-  mat.opacityTexture = mat.diffuseTexture;
   mat.transparencyMode = BABYLON.Material.MATERIAL_ALPHATESTANDBLEND;
   mat.alphaMode = BABYLON.Engine.ALPHA_COMBINE;
   mat.alphaCutOff = 0;
+
+  if (typeof texture === 'string') {
+    mat.diffuseTexture = new BABYLON.Texture(texture, scene);
+  } else {
+    createRawTexture(texture).then((rawTexture) => {
+      mat.diffuseTexture = rawTexture;
+    });
+  }
+
   img.material = mat;
-  
   img.setParent(menu, true, true);
+
 
   const [text] = gui.querySelectorAll(`.${name}`) as unknown as HTMLDivElement[];
   if (text) {
@@ -160,12 +202,12 @@ function createNode(name: string, texture: string, {
   return [img, text];
 }
 
-export function createMenuItem(name: string, texture: string, options: CreateOptions) {
+export function createMenuItem(name: string, texture: ArrayBuffer | string, options: CreateOptions) {
   const [img, text] = createNode(name, texture, options);
   return new MenuItem(img, text);
 }
 
-export function createMenuButton(name: string, texture: string, options: CreateOptions) {
+export function createMenuButton(name: string, texture: ArrayBuffer | string, options: CreateOptions) {
 
   const [img, text] = createNode(name, texture, options);
 

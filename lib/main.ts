@@ -3,93 +3,98 @@ import * as setting from './setting';
 import * as timer from './timer';
 import * as breakbg from './breakbg';
 import * as hand from './hand';
+import * as audio from './audio';
 import * as res from './res';
 
 spatialDocument.watchInputEvent();
 
-const titleMenuItem = menu.createMenuItem('titleMenuItem', res.titleImg, {
-  width: 500,
-  height: 150,
-  left: 250,
+const titleMenuItem = menu.createMenuItem('titleMenuItem', res.titleTexture, {
+  width: 700,
+  height: 210,
+  left: 150,
   top: 150
 });
 
-const settingWorkTimeTitleMenuItem = menu.createMenuItem('settingWorkTimeTitleMenuItem', res.settingWorkTimeTitleImg, {
-  width: 400,
-  height: 100,
-  left: 300,
-  top: 200,
-  fontSize: 40,
-  color: 'white',
-});
-
-const settingBreakTimeTitleMenuItem = menu.createMenuItem('settingBreakTimeTitleMenuItem', res.settingBreakTimeTitleImg, {
-  width: 400,
-  height: 100,
-  left: 300,
-  top: 200,
-  fontSize: 40,
-  color: 'white',
-});
-
-const startMenuBtn = menu.createMenuButton('startMenuBtn', res.startBtnImg, {
-  width: 150,
-  height: 75,
+const settingWorkTimeTitleMenuItem = menu.createMenuItem('settingWorkTimeTitleMenuItem', res.settingWorkTimeTexture, {
+  width: 500,
+  height: 125,
   left: 250,
-  top: 700
+  top: 200
 });
 
-const settingMenuBtn = menu.createMenuButton('settingMenuBtn', res.settingBtnImg, {
-  width: 150,
-  height: 75,
-  left: 650,
-  top: 700
+const settingBreakTimeTitleMenuItem = menu.createMenuItem('settingBreakTimeTitleMenuItem', res.settingBreakTimeTexture, {
+  width: 500,
+  height: 125,
+  left: 250,
+  top: 200
 });
 
-const prevSettingMenuBtn = menu.createMenuButton('prevSettingMenuBtn', res.prevSettingImg, {
-  width: 150,
-  height: 75,
-  left: 650,
-  top: 700
+const tipsMenuItem = menu.createMenuItem('tipsMenuItem', res.tipsTexture, {
+  width: 700,
+  height: 58,
+  left: 150,
+  top: 800
 });
 
-const nextSettingMenuBtn = menu.createMenuButton('nextSettingMenuBtn', res.nextSettingImg, {
-  width: 150,
-  height: 75,
-  left: 650,
-  top: 700
+const startMenuBtn = menu.createMenuButton('startMenuBtn', res.startBtnTexture, {
+  width: 300,
+  height: 150,
+  left: 150,
+  top: 600
 });
 
-const workTimeChoosePrevBtn = menu.createMenuButton('workTimeChoosePrevBtn', res.prevOptionImg, {
-  width: 60,
-  height: 180,
-  left: 50,
-  top: 420
+const settingMenuBtn = menu.createMenuButton('settingMenuBtn', res.settingBtnTexture, {
+  width: 300,
+  height: 150,
+  left: 550,
+  top: 600
 });
 
-const workTimeChooseNextBtn = menu.createMenuButton('workTimeChooseNextBtn', res.nextOptionImg, {
-  width: 60,
-  height: 180,
-  left: 900,
-  top: 420
+const prevSettingMenuBtn = menu.createMenuButton('prevSettingMenuBtn', res.prevSettingTexture, {
+  width: 300,
+  height: 150,
+  left: 550,
+  top: 600
 });
 
-const breakTimeChoosePrevBtn = menu.createMenuButton('breakTimeChoosePrevBtn', res.prevOptionImg, {
-  width: 60,
-  height: 180,
-  left: 50,
-  top: 420
+const nextSettingMenuBtn = menu.createMenuButton('nextSettingMenuBtn', res.nextSettingTexture, {
+  width: 300,
+  height: 150,
+  left: 550,
+  top: 600
 });
 
-const breakTimeChooseNextBtn = menu.createMenuButton('breakTimeChooseNextBtn', res.nextOptionImg, {
-  width: 60,
-  height: 180,
-  left: 900,
-  top: 420
+const workTimeChoosePrevBtn = menu.createMenuButton('workTimeChoosePrevBtn', res.prevOptionTexture, {
+  width: 100,
+  height: 200,
+  left: 120,
+  top: 160
+});
+
+const workTimeChooseNextBtn = menu.createMenuButton('workTimeChooseNextBtn', res.nextOptionTexture, {
+  width: 100,
+  height: 200,
+  left: 800,
+  top: 160
+});
+
+const breakTimeChoosePrevBtn = menu.createMenuButton('breakTimeChoosePrevBtn', res.prevOptionTexture, {
+  width: 100,
+  height: 200,
+  left: 120,
+  top: 160
+});
+
+const breakTimeChooseNextBtn = menu.createMenuButton('breakTimeChooseNextBtn', res.nextOptionTexture, {
+  width: 100,
+  height: 200,
+  left: 800,
+  top: 160
 });
 
 function hideAllMenuItem() {
   titleMenuItem.hide();
+  tipsMenuItem.hide();
   settingWorkTimeTitleMenuItem.hide();
   settingBreakTimeTitleMenuItem.hide();
   startMenuBtn.hide();
@@ -123,12 +128,14 @@ function Main() {
   titleMenuItem.show();
   startMenuBtn.show();
   settingMenuBtn.show();
+  tipsMenuItem.show();
 
   startRandomTimer();
 }
 
 function SettingWithWorkTime() {
   hideAllMenuItem();
+  tipsMenuItem.show();
   startMenuBtn.show();
   settingWorkTimeTitleMenuItem.show();
   nextSettingMenuBtn.show();
@@ -140,6 +147,7 @@ function SettingWithWorkTime() {
 
 function SettingWithBreakTime() {
   hideAllMenuItem();
+  tipsMenuItem.show();
   startMenuBtn.show();
   settingBreakTimeTitleMenuItem.show();
   prevSettingMenuBtn.show();
@@ -153,13 +161,23 @@ function Start() {
   hideAllMenuItem();
   stopRandomTimer();
 
+  let bgAudio: HTMLAudioElement;
+  audio.bg.then(play => bgAudio = play(0, true));
+
   timer.start(
     setting.getWorkTime(),
     setting.getBreakTime(),
     (isWorking: boolean) => {
       if (isWorking) {
+        if (bgAudio) {
+          bgAudio.volume = 0;
+        }
         breakbg.hide();
       } else {
+        if (bgAudio) {
+          bgAudio.currentTime = 0;
+          bgAudio.volume = 0.5;
+        }
         breakbg.show();
       }
     }

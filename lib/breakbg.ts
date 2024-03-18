@@ -1,7 +1,7 @@
 import * as res from './res';
+import { createRawTexture } from "./createRawTexture";
 
 const scene = spatialDocument.scene;
-const texture = new BABYLON.Texture(res.breakBgImg, scene);
 
 const plane = BABYLON.MeshBuilder.CreatePlane('plane', {
   width: 192,
@@ -17,9 +17,12 @@ plane.position.y = 0;
 const mat = new BABYLON.StandardMaterial('break-bg', scene);
 plane.material = mat;
 
+createRawTexture(res.breakBgTexture).then((texture) => {
+  mat.diffuseTexture = texture;
+});
+
 export function show() {
   plane.scaling = new BABYLON.Vector3(1, 1, 1);
-  mat.diffuseTexture = texture;
 }
 
 export function hide() {

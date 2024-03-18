@@ -1,16 +1,35 @@
-const prefix = 'http://files.sunrisenomad.cn/images/resources';
+import titleImg from '../resources/title.png';
+import settingWorkTimeImg from '../resources/settingWorkTime.png';
+import settingBreakTimeImg from '../resources/settingBreakTime.png';
+import startBtnImg from '../resources/startBtn.png';
+import settingBtnImg from '../resources/settingBtn.png';
+import prevSettingImg from '../resources/prevSettingBtn.png';
+import nextSettingImg from '../resources/nextSettingBtn.png';
+import prevOptionImg from '../resources/prevOptionBtn.png';
+import nextOptionImg from '../resources/nextOptionBtn.png';
+import breakBgImg from '../resources/breakbg.png';
+import tipsImg from '../resources/tips.png';
 
-export const titleImg = `${prefix}/title.png`;
-export const settingWorkTimeTitleImg = `${prefix}/settingWorkTime.png`;
-export const settingBreakTimeTitleImg = `${prefix}/settingBreakTime.png`;
+export const titleTexture = titleImg;
+export const settingWorkTimeTexture = settingWorkTimeImg;
+export const settingBreakTimeTexture = settingBreakTimeImg;
+export const startBtnTexture = startBtnImg;
+export const settingBtnTexture = settingBtnImg;
+export const prevSettingTexture = prevSettingImg;
+export const nextSettingTexture = nextSettingImg;
+export const prevOptionTexture = prevOptionImg;
+export const nextOptionTexture = nextOptionImg;
+export const breakBgTexture = breakBgImg;
+export const tipsTexture = tipsImg;
 
-export const startBtnImg = `${prefix}/startBtn.png`;
-export const settingBtnImg = `${prefix}/settingBtn.png`;
-
-export const prevSettingImg = `${prefix}/prevSettingBtn.png`;
-export const nextSettingImg = `${prefix}/nextSettingBtn.png`;
-
-export const prevOptionImg = `${prefix}/prevOptionBtn.png`;
-export const nextOptionImg = `${prefix}/nextOptionBtn.png`;
-
-export const breakBgImg = `${prefix}/breakbg.png`;
+// const prefix = 'http://files.sunrisenomad.cn/images/resources';
+// export const titleImg = `${prefix}/title.png`;
+// export const settingWorkTimeTitleImg = `${prefix}/settingWorkTime.png`;
+// export const settingBreakTimeTitleImg = `${prefix}/settingBreakTime.png`;
+// export const startBtnImg = `${prefix}/startBtn.png`;
+// export const settingBtnImg = `${prefix}/settingBtn.png`;
+// export const prevSettingImg = `${prefix}/prevSettingBtn.png`;
+// export const nextSettingImg = `${prefix}/nextSettingBtn.png`;
+// export const prevOptionImg = `${prefix}/prevOptionBtn.png`;
+// export const nextOptionImg = `${prefix}/nextOptionBtn.png`;
+// export const breakBgImg = `${prefix}/breakbg.png`;
